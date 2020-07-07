@@ -46,11 +46,15 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase[shortURL] = longURL;
   console.log(req.body);  // Log the POST request body to the console
-  console.log(longURL);
-  console.log(urlDatabase);
-  //res.send("OK");
   res.redirect(`/urls/${shortURL}`);         // Respond with 'Ok' (we will replace this)
 });
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  delete urlDatabase.shortURL;
+  console.log(urlDatabase);
+  res.redirect("/urls");
+})
 
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
