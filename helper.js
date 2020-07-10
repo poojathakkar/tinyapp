@@ -1,5 +1,3 @@
-
-
 const getUserByEmail = (email, users) => {
   for (let userId in users) {
     if (users[userId].email === email) {
