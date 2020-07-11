@@ -70,7 +70,7 @@ const authenticateUser = (email, password) => {
 const urlsForUser = (id) => {
   let outputUrl = {};
   for (let urls in urlDatabase) {
-    if(urlDatabase[urls].userID === id) {
+    if (urlDatabase[urls].userID === id) {
       outputUrl[urls] = { longURL: urlDatabase[urls].longURL } ;
     }
   }
@@ -104,7 +104,7 @@ app.get("/register", (req, res) => {
     //templateVars = { user: users[req.session['user_id']] };
     req.session["user_id"] = null;
   }
-  res.render("register", {user: null});
+  res.render("register", { user: null });
 
 });
 
