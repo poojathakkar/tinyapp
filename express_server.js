@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   next();
 });
 
-function generateRandomString() {
+const generateRandomString = function() {
   return Math.random().toString(36).substring(2,8);
 };
 
@@ -31,15 +31,15 @@ const urlDatabase = {
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
 };
 
-const users = { 
+const users = {
   "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
+    id: "userRandomID",
+    email: "user@example.com",
     password: bcrypt.hashSync("purple-monkey-dinosaur", saltRounds)
   },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: bcrypt.hashSync("dishwasher-funk", saltRounds)
   }
 };
@@ -71,11 +71,11 @@ const urlsForUser = (id) => {
   let outputUrl = {};
   for (let urls in urlDatabase) {
     if (urlDatabase[urls].userID === id) {
-      outputUrl[urls] = { longURL: urlDatabase[urls].longURL } ;
+      outputUrl[urls] = { longURL: urlDatabase[urls].longURL };
     }
   }
   return outputUrl;
-}
+};
 
 app.get("/login", (req, res) => {
   const templateVars = { user: null };
@@ -100,7 +100,7 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  if (req.session["user_id"]){
+  if (req.session["user_id"]) {
     //templateVars = { user: users[req.session['user_id']] };
     req.session["user_id"] = null;
   }
@@ -113,7 +113,7 @@ app.post("/register", (req, res) => {
 
   //if email or password is empty
   if (email === "" || password === "") {
-   res.status(400).send("Error: Input email id and password");
+    res.status(400).send("Error: Input email id and password");
   }
   //if user already exists
   const user = getUserByEmail(email, users);
@@ -130,7 +130,7 @@ app.post("/register", (req, res) => {
 app.get("/urls", (req, res) => {
   const userId = req.session["user_id"];
   const loggedInUser = users[userId];
-  if (userId){
+  if (userId) {
     const templateVars = { urls: urlsForUser(userId), user: loggedInUser };
     res.render("urls_index", templateVars);
   } else {
@@ -164,17 +164,26 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const userId = req.session["user_id"];
   const loggedInUser = users[userId];
-  let templateVars = { shortURL: req.params.shortURL,
-                       longURL: urlDatabase[req.params.shortURL].longURL, 
-                       user: loggedInUser };
-  res.render("urls_show", templateVars);
+  
+  if (userId) {
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      user: loggedInUser
+    };
+    res.render("urls_show", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
   console.log(req.params.shortURL);
   console.log(urlDatabase);
-  let templateVars = { shortURL: req.params.shortURL, 
-                       longURL: urlDatabase[req.params.shortURL].longURL };
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL].longURL
+  };
   res.redirect(templateVars.longURL);
 });
 
@@ -187,7 +196,7 @@ app.post("/urls/:shortURL", (req, res) => {
   urlDatabase[req.params.shortURL].longURL = req.body.longURL;
   console.log(urlDatabase);
   res.redirect("/urls");
-})
+});
 
 app.post("/logout", (req, res) => {
   req.session["user_id"] = null;
